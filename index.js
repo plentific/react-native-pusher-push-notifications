@@ -27,5 +27,5 @@ export default {
       eventName,
       (payload) => callback(payload)
     )
-  }
+  },
 };

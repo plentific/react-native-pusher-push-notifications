@@ -7,6 +7,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.Callback;
+import com.pusher.android.notifications.fcm.FCMPushNotificationReceivedListener;
 
 public class RNPusherPushNotificationsModule extends ReactContextBaseJavaModule {
 
@@ -25,7 +26,7 @@ public class RNPusherPushNotificationsModule extends ReactContextBaseJavaModule 
 
   @ReactMethod
   public void setAppKey(String appKey) {
-    this.pusher = new PusherWrapper(appKey, this.reactContext);
+    this.pusher = new PusherWrapper(appKey, this.reactContext, (FCMPushNotificationReceivedListener) getCurrentActivity());
   }
 
   	@ReactMethod

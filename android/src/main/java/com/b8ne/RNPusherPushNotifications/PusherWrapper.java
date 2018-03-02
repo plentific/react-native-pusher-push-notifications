@@ -1,6 +1,14 @@
 package com.b8ne.RNPusherPushNotifications;
 
+import android.app.Activity;
 import android.util.Log;
+
+import android.app.PendingIntent;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.app.NotificationManager;
+import android.support.v4.app.NotificationCompat;
 
 import com.facebook.react.bridge.ReactContext;
 import com.google.firebase.messaging.RemoteMessage;
@@ -16,6 +24,8 @@ import com.pusher.android.notifications.tokens.PushNotificationRegistrationListe
 
 public class PusherWrapper {
     private static PushNotificationRegistration nativePusher;
+    private ReactContext context;
+    private FCMPushNotificationReceivedListener listener;
 
     public PusherWrapper(String appKey) {
         Log.d("PUSHER_WRAPPER", "Creating Pusher with App Key: " + appKey);
@@ -26,7 +36,9 @@ public class PusherWrapper {
         }
     }
 
-    public PusherWrapper(String appKey, ReactContext context) {
+    public PusherWrapper(String appKey, ReactContext context, FCMPushNotificationReceivedListener listener) {
+      this.context = context;
+      this.listener = listener;
       Log.d("PUSHER_WRAPPER", "Creating Pusher with App Key: " + appKey);
       System.out.print("Creating Pusher with App Key: " + appKey);
         if (nativePusher == null) {
@@ -46,14 +58,6 @@ public class PusherWrapper {
                 public void onFailedRegistration(int statusCode, String response) {
                     Log.d("PUSHER_WRAPPER", "FCM Registration failed with code " + statusCode + " " + response);
                     System.out.print("FCM Registration failed with code " + statusCode + " " + response);
-                }
-            });
-            nativePusher.setFCMListener(new FCMPushNotificationReceivedListener() {
-                @Override
-                public void onMessageReceived(RemoteMessage remoteMessage) {
-                    RemoteMessage temp = remoteMessage;
-                    Log.d("PUSHER_WRAPPER", remoteMessage.toString());
-                    System.out.print(remoteMessage.toString());
                 }
             });
 
@@ -83,6 +87,8 @@ public class PusherWrapper {
                 System.out.print(":(: received " + statusCode + " with" + response);
             }
         });
+
+        nativePusher.setFCMListener(this.listener);
     }
 
     public void unsubscribe(final String interest) {
